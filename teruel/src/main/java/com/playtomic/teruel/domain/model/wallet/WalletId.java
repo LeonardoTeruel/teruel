@@ -1,4 +1,4 @@
-package com.playtomic.teruel.domain.model;
+package com.playtomic.teruel.domain.model.wallet;
 
 import jakarta.persistence.Embeddable;
 import lombok.*;

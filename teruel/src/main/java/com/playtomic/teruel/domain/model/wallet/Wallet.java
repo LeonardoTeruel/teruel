@@ -1,4 +1,4 @@
-package com.playtomic.teruel.domain.model;
+package com.playtomic.teruel.domain.model.wallet;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
