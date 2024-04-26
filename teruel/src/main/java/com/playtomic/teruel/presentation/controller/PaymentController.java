@@ -27,7 +27,6 @@ public class PaymentController {
     public ResponseEntity<String> topUpWallet(@RequestBody PaymentRequest paymentRequest) {
 
         try {
-
         Long transactionId = createPaymentUseCase.topUpWallet(paymentRequest);
         return ResponseEntity.ok("Wallet topped up successfully and " +
                                             "transaction id created: " + transactionId);
