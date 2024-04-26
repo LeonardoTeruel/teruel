@@ -50,6 +50,9 @@ public class CreatePaymentUseCase {
         walletList.getFirst().setBalance(wallet.getBalance().add(transaction.getAmount()));
         walletRepository.save(wallet);
 
+        transaction.setStatus(TransactionStatus.COMPLETED);
+        transactionRepository.save(transaction);
+
         return transaction.getId();
     }
 }
