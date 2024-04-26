@@ -18,8 +18,7 @@ import lombok.Setter;
 public class TransactionType {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
     @NotEmpty
     private String name;

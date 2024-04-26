@@ -2,10 +2,9 @@ package com.playtomic.teruel.infrastructure.external.stripe.service;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.playtomic.teruel.domain.rest.PaymentRest;
-import com.playtomic.teruel.infrastructure.external.stripe.dto.Payment;
+import com.playtomic.teruel.infrastructure.external.stripe.dto.StripePaymentResponse;
 import com.playtomic.teruel.infrastructure.external.stripe.exceptions.StripeRestTemplateResponseErrorHandler;
 import com.playtomic.teruel.infrastructure.external.stripe.exceptions.StripeServiceException;
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -55,9 +54,9 @@ public class StripeService implements PaymentRest {
      *
      * @throws StripeServiceException
      */
-    public Payment charge(@NonNull String creditCardNumber, @NonNull BigDecimal amount) throws StripeServiceException {
+    public StripePaymentResponse charge(@NonNull String creditCardNumber, @NonNull BigDecimal amount) throws StripeServiceException {
         ChargeRequest body = new ChargeRequest(creditCardNumber, amount);
-        return restTemplate.postForObject(chargesUri, body, Payment.class);
+        return restTemplate.postForObject(chargesUri, body, StripePaymentResponse.class);
     }
 
     /**

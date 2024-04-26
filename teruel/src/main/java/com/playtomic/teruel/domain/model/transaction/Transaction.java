@@ -11,6 +11,7 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 
 @Entity
 @Getter
@@ -53,6 +54,9 @@ public class Transaction {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now(ZoneOffset.UTC);
+    }
+
+    public Transaction(Wallet wallet, BigDecimal amount, TransactionType transactionType, TransactionStatus transactionStatus) {
     }
 
 

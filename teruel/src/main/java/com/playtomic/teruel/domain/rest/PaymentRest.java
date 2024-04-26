@@ -2,11 +2,11 @@ package com.playtomic.teruel.domain.rest;
 
 import com.playtomic.teruel.domain.model.paymentgateway.Payment;
 
+import java.math.BigDecimal;
+
 public interface PaymentRest {
 
-    private Payment charge (){
-        return null;
-    };
+     Payment charge (String creditCardNumber, BigDecimal amount);
 
-    private void refund (){};
+     void refund (String paymentId);
 }

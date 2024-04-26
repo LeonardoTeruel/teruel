@@ -19,13 +19,10 @@ public class GetWalletBalanceUseCase {
     }
 
     public BigDecimal getWalletBalance(UUID userId) {
-
         List<Wallet> walletList = walletRepository.findByIdUserId(userId);
-
         if (walletList == null || walletList.isEmpty()) {
            throw new WalletNotFoundException("Wallet not found for user with ID: " + userId.toString());
         }
-
         return walletList.getFirst().getBalance();
     }
 }
