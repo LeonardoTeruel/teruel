@@ -1,11 +1,13 @@
 package com.playtomic.teruel.application;
 
 import com.playtomic.teruel.domain.model.paymentgateway.Payment;
+import com.playtomic.teruel.domain.model.paymentgateway.PaymentGatewayProviderLog;
 import com.playtomic.teruel.domain.model.transaction.Transaction;
 import com.playtomic.teruel.domain.model.transaction.TransactionStatus;
 import com.playtomic.teruel.domain.model.transaction.TransactionType;
 import com.playtomic.teruel.domain.model.transaction.TransactionTypeEnum;
 import com.playtomic.teruel.domain.model.wallet.Wallet;
+import com.playtomic.teruel.domain.repository.paymentgateway.PaymentGatewayProviderLogRepository;
 import com.playtomic.teruel.domain.repository.transaction.TransactionRepository;
 import com.playtomic.teruel.domain.repository.wallet.WalletRepository;
 import com.playtomic.teruel.domain.rest.PaymentRest;
@@ -24,12 +26,16 @@ public class CreatePaymentUseCase {
 
     private final WalletRepository walletRepository;
     private final TransactionRepository transactionRepository;
+    private final PaymentGatewayProviderLogRepository paymentGatewayProviderLogRepository;
     private final PaymentRest paymentRest;
 
     public CreatePaymentUseCase(WalletRepository walletRepository,
-                                     TransactionRepository transactionRepository, PaymentRest paymentRest) {
+                                    TransactionRepository transactionRepository,
+                                        PaymentGatewayProviderLogRepository paymentGatewayProviderLogRepository,
+                                             PaymentRest paymentRest) {
         this.walletRepository = walletRepository;
         this.transactionRepository = transactionRepository;
+        this.paymentGatewayProviderLogRepository = paymentGatewayProviderLogRepository;
         this.paymentRest = paymentRest;
     }
 
@@ -57,6 +63,13 @@ public class CreatePaymentUseCase {
         // Process payment using the payment gateway provider (Stripe API in this case)
         Payment paymentChargeId = paymentRest.charge(paymentRequest.creditCardNumber(),
               paymentRequest.amount());
+
+        PaymentGatewayProviderLog paymentGatewayProviderLog = PaymentGatewayProviderLog.builder()
+                        .transaction(transaction)
+                        .gatewayProviderResponse(paymentChargeId.toString())
+                        .build();
+
+        paymentGatewayProviderLogRepository.save(paymentGatewayProviderLog);
 
         walletList.getFirst().setBalance(wallet.getBalance().add(transaction.getAmount()));
         walletRepository.save(wallet);
