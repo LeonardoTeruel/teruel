@@ -1,5 +1,6 @@
 package com.playtomic.teruel.presentation.exception;
 
+import com.playtomic.teruel.domain.exception.paymentgateway.PaymentGatewayException;
 import com.playtomic.teruel.domain.exception.wallet.WalletNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,5 +27,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidRequestException.class)
     public ResponseEntity<String> handleInvalidRequestException(InvalidRequestException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(PaymentGatewayException.class)
+    public ResponseEntity<String> handlePaymentGatewayException(PaymentGatewayException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(ex.getMessage());
+    }
+
+
+    @ExceptionHandler(TransactionFailedException.class)
+    public ResponseEntity<String> handlePaymentGatewayException(TransactionFailedException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
 }
