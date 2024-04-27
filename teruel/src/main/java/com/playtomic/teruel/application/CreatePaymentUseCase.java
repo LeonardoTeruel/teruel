@@ -10,13 +10,17 @@ import com.playtomic.teruel.domain.repository.transaction.TransactionRepository;
 import com.playtomic.teruel.domain.repository.wallet.WalletRepository;
 import com.playtomic.teruel.domain.rest.PaymentRest;
 import com.playtomic.teruel.presentation.dto.PaymentRequest;
+import com.playtomic.teruel.presentation.exception.InvalidRequestException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
 public class CreatePaymentUseCase {
+
+    private final String MINIMUM_AMOUNT_VALIDATION_MESSAGE = "Amount must be at least 10 euro.";
 
     private final WalletRepository walletRepository;
     private final TransactionRepository transactionRepository;
@@ -31,6 +35,8 @@ public class CreatePaymentUseCase {
 
     @Transactional
     public Long topUpWallet(PaymentRequest paymentRequest)  {
+
+        validatePaymentRequest(paymentRequest);
 
         List<Wallet> walletList = walletRepository.findByIdUserId(paymentRequest.userId());
         Wallet wallet = walletList.getFirst();
@@ -59,5 +65,16 @@ public class CreatePaymentUseCase {
         transactionRepository.save(transaction);
 
         return transaction.getId();
+    }
+
+    private void validatePaymentRequest(PaymentRequest paymentRequest) {
+        validateMinimumAmount(paymentRequest.amount());
+    }
+
+    private void validateMinimumAmount (BigDecimal amount) throws InvalidRequestException {
+        BigDecimal minimumAmount = BigDecimal.TEN; // Minimum amount is 10 euros
+        if (amount.compareTo(minimumAmount) < 0) {
+            throw new InvalidRequestException(MINIMUM_AMOUNT_VALIDATION_MESSAGE);
+        }
     }
 }
