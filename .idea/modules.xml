@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/teruel.iml" filepath="$PROJECT_DIR$/.idea/teruel.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/teruel.teruel.main.iml" filepath="$PROJECT_DIR$/.idea/modules/teruel.teruel.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/teruel.teruel.main~1.iml" filepath="$PROJECT_DIR$/.idea/modules/teruel.teruel.main~1.iml" />
     </modules>
   </component>
 </project>

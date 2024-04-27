@@ -16,6 +16,8 @@ import com.playtomic.teruel.domain.rest.PaymentRest;
 import com.playtomic.teruel.presentation.dto.PaymentRequest;
 import com.playtomic.teruel.presentation.exception.InvalidRequestException;
 import com.playtomic.teruel.presentation.exception.TransactionFailedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +34,7 @@ public class CreatePaymentUseCase {
     private final String PAYMENT_GATEWAY_PROVIDER_ERROR_MESSAGE = "Failed in processing with Payment Gateway Provider";
     private final String DATA_ACCESS_LEVEL_ERROR_MESSAGE = "Failed to process transaction on Data Access level";
 
+    private static final Logger logger = LoggerFactory.getLogger(CreatePaymentUseCase.class);
 
     private final WalletRepository walletRepository;
     private final TransactionRepository transactionRepository;
@@ -55,6 +58,9 @@ public class CreatePaymentUseCase {
         lock.lock();
         try {
 
+            logger.info("Starting Validations for TopUp wallet process for userId: {}",
+                    paymentRequest.userId());
+
             validatePaymentRequest(paymentRequest);
 
             List<Wallet> walletList = walletRepository.findByIdUserId(paymentRequest.userId());
@@ -77,6 +83,7 @@ public class CreatePaymentUseCase {
 
             try {
                 transactionRepository.save(transaction);
+                logger.info("Pending Transaction created with transactionId: {}", transaction.getId());
 
                 // Process payment using the payment gateway provider (Stripe API in this case)
                 Payment paymentChargeId = paymentRest.charge(paymentRequest.creditCardNumber(),
@@ -91,9 +98,12 @@ public class CreatePaymentUseCase {
 
                 walletList.getFirst().setBalance(wallet.getBalance().add(transaction.getAmount()));
                 walletRepository.save(wallet);
+                logger.info("Wallet balance updated: {}", wallet.getBalance());
+
 
                 transaction.setStatus(TransactionStatus.COMPLETED);
                 transactionRepository.save(transaction);
+                logger.info("Transaction completed with transactionId: {}", transaction.getId());
 
                 return transaction.getId();
 
