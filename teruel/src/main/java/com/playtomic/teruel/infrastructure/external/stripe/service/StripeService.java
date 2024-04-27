@@ -1,10 +1,11 @@
 package com.playtomic.teruel.infrastructure.external.stripe.service;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.playtomic.teruel.domain.rest.PaymentRest;
+import com.playtomic.teruel.infrastructure.external.stripe.dto.ChargeRequest;
 import com.playtomic.teruel.infrastructure.external.stripe.dto.StripePaymentResponse;
 import com.playtomic.teruel.infrastructure.external.stripe.exceptions.StripeRestTemplateResponseErrorHandler;
 import com.playtomic.teruel.infrastructure.external.stripe.exceptions.StripeServiceException;
+
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -55,7 +56,11 @@ public class StripeService implements PaymentRest {
      * @throws StripeServiceException
      */
     public StripePaymentResponse charge(@NonNull String creditCardNumber, @NonNull BigDecimal amount) throws StripeServiceException {
-        ChargeRequest body = new ChargeRequest(creditCardNumber, amount);
+
+        ChargeRequest body = ChargeRequest.builder()
+                                .creditCardNumber(creditCardNumber)
+                                .amount(amount).build();
+
         return restTemplate.postForObject(chargesUri, body, StripePaymentResponse.class);
     }
 
@@ -65,19 +70,5 @@ public class StripeService implements PaymentRest {
     public void refund(@NonNull String paymentId) throws StripeServiceException {
         // Object.class because we don't read the body here.
         restTemplate.postForEntity(chargesUri.toString(), null, Object.class, paymentId);
-    }
-
-    private static class ChargeRequest {
-
-        @NonNull
-        @JsonProperty("credit_card")
-        String creditCardNumber;
-
-        @NonNull
-        @JsonProperty("amount")
-        BigDecimal amount;
-
-        public ChargeRequest(String creditCardNumber, BigDecimal amount) {
-        }
     }
 }

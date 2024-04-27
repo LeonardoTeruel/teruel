@@ -23,7 +23,7 @@ public class CreatePaymentUseCase {
     private final PaymentRest paymentRest;
 
     public CreatePaymentUseCase(WalletRepository walletRepository,
-                          TransactionRepository transactionRepository, PaymentRest paymentRest) {
+                                     TransactionRepository transactionRepository, PaymentRest paymentRest) {
         this.walletRepository = walletRepository;
         this.transactionRepository = transactionRepository;
         this.paymentRest = paymentRest;
@@ -39,8 +39,13 @@ public class CreatePaymentUseCase {
                 TransactionTypeEnum.TOP_UP.getName());
 
         // Record transaction
-        Transaction transaction = new Transaction(wallet, paymentRequest.amount(),
-                transactionType,TransactionStatus.PENDING);
+        Transaction transaction = Transaction.builder()
+                .wallet(wallet)
+                .amount(paymentRequest.amount())
+                .type(transactionType)
+                .status(TransactionStatus.PENDING)
+                .build();
+
         transactionRepository.save(transaction);
 
         // Process payment using the payment gateway provider (Stripe API in this case)

@@ -3,21 +3,18 @@ package com.playtomic.teruel.domain.model.transaction;
 
 import com.playtomic.teruel.domain.model.wallet.Wallet;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.List;
+
 
 @Entity
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
+@Builder
 public class Transaction {
 
     @Id
@@ -55,9 +52,5 @@ public class Transaction {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now(ZoneOffset.UTC);
     }
-
-    public Transaction(Wallet wallet, BigDecimal amount, TransactionType transactionType, TransactionStatus transactionStatus) {
-    }
-
 
 }
