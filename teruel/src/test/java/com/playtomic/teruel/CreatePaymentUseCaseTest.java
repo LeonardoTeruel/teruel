@@ -1,6 +1,6 @@
 package com.playtomic.teruel;
 
-import com.playtomic.teruel.application.CreatePaymentUseCase;
+import com.playtomic.teruel.application.CreatePaymentUseCaseImp;
 import com.playtomic.teruel.domain.exception.paymentgateway.PaymentGatewayException;
 import com.playtomic.teruel.domain.model.transaction.Transaction;
 import com.playtomic.teruel.domain.model.wallet.Wallet;
@@ -40,7 +40,7 @@ public class CreatePaymentUseCaseTest {
     private PaymentRest paymentRest;
 
     @InjectMocks
-    private CreatePaymentUseCase createPaymentUseCase;
+    private CreatePaymentUseCaseImp createPaymentUseCase;
 
     @BeforeEach
     void setUp() {

@@ -1,7 +1,6 @@
 package com.playtomic.teruel;
 
-import com.playtomic.teruel.application.CreatePaymentUseCase;
-import com.playtomic.teruel.domain.exception.paymentgateway.PaymentGatewayException;
+import com.playtomic.teruel.application.CreatePaymentUseCaseImp;
 import com.playtomic.teruel.presentation.controller.PaymentController;
 import com.playtomic.teruel.presentation.dto.PaymentRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,12 +18,12 @@ import static org.mockito.Mockito.when;
 
 public class PaymentControllerTest {
 
-    private CreatePaymentUseCase createPaymentUseCase;
+    private CreatePaymentUseCaseImp createPaymentUseCase;
     private PaymentController paymentController;
 
     @BeforeEach
     public void setUp() {
-        createPaymentUseCase = mock(CreatePaymentUseCase.class);
+        createPaymentUseCase = mock(CreatePaymentUseCaseImp.class);
         paymentController = new PaymentController(createPaymentUseCase);
     }
 
