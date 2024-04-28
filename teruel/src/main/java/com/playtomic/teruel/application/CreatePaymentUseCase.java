@@ -1,6 +1,7 @@
 package com.playtomic.teruel.application;
 
 import com.playtomic.teruel.domain.exception.paymentgateway.PaymentGatewayException;
+import com.playtomic.teruel.domain.exception.paymentgateway.PaymentGatewayTimeoutException;
 import com.playtomic.teruel.domain.exception.wallet.WalletNotFoundException;
 import com.playtomic.teruel.domain.model.paymentgateway.Payment;
 import com.playtomic.teruel.domain.model.paymentgateway.PaymentGatewayProviderLog;
@@ -33,6 +34,7 @@ public class CreatePaymentUseCase {
     private final String WALLET_NOT_FOUND_MESSAGE = "Wallet not found for user ID: ";
     private final String PAYMENT_GATEWAY_PROVIDER_ERROR_MESSAGE = "Failed in processing with Payment Gateway Provider";
     private final String DATA_ACCESS_LEVEL_ERROR_MESSAGE = "Failed to process transaction on Data Access level";
+    private final String PAYMENT_GATEWAY_TIMEOUT_MESSAGE = "The Transaction is pending and it will be confirmed soon";
 
     private static final Logger logger = LoggerFactory.getLogger(CreatePaymentUseCase.class);
 
@@ -73,7 +75,11 @@ public class CreatePaymentUseCase {
             TransactionType transactionType = new TransactionType(TransactionTypeEnum.TOP_UP.getTypeId(),
                     TransactionTypeEnum.TOP_UP.getName());
 
-            // Record transaction
+            /* An idempotency key could be generated here for the transaction
+               and to be sent to the payment gateway provider to help avoiding duplication issues
+                but as this wasn't implemented in the given service of the Stripe, I didn't implement
+                it to use that as it was given */
+
             Transaction transaction = Transaction.builder()
                     .wallet(wallet)
                     .amount(paymentRequest.amount())
@@ -81,10 +87,10 @@ public class CreatePaymentUseCase {
                     .status(TransactionStatus.PENDING)
                     .build();
 
-            try {
-                transactionRepository.save(transaction);
-                logger.info("Pending Transaction created with transactionId: {}", transaction.getId());
+            transactionRepository.save(transaction);
+            logger.info("Pending Transaction created with transactionId: {}", transaction.getId());
 
+            try {
                 // Process payment using the payment gateway provider (Stripe API in this case)
                 Payment paymentChargeId = paymentRest.charge(paymentRequest.creditCardNumber(),
                         paymentRequest.amount());
@@ -103,17 +109,26 @@ public class CreatePaymentUseCase {
 
                 transaction.setStatus(TransactionStatus.COMPLETED);
                 transactionRepository.save(transaction);
-                logger.info("Transaction completed with transactionId: {}", transaction.getId());
+                logger.info("Transaction COMPLETED with transactionId: {}", transaction.getId());
 
                 return transaction.getId();
 
             } catch (PaymentGatewayException ex) {
+                transaction.setStatus(TransactionStatus.FAILED);
+                transactionRepository.save(transaction);
+                logger.info("Transaction FAILED with transactionId: {}", transaction.getId());
                 throw new PaymentGatewayException(PAYMENT_GATEWAY_PROVIDER_ERROR_MESSAGE, ex);
+
+            } catch (PaymentGatewayTimeoutException ex) {
+                logger.error("Payment Gateway Timeout: {}", ex.getMessage(), ex);
+                /* Do nothing, leave the transaction in pending status
+                 to make a reconciliation with the provider and confirm if it was completed or failed.
+                 Return message to the client saying the transaction is pending confirmation */
+                throw new PaymentGatewayTimeoutException(PAYMENT_GATEWAY_TIMEOUT_MESSAGE, ex);
 
             } catch (DataAccessException ex) {
                 throw new TransactionFailedException(DATA_ACCESS_LEVEL_ERROR_MESSAGE, ex);
             }
-
         } finally {
             lock.unlock();
         }
