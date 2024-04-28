@@ -13,6 +13,7 @@
 - Java 21
 - Gradle
 - Spring Boot 3
+- Spring JPA
 - PostgreSQL
 - Lombok
 - SLF4J for logging
@@ -48,7 +49,22 @@
 3. Build the project: `./gradlew build`
 4. Run the application: `./gradlew bootRun`
 
-## Testing
+## Manual Testing
+ You can test it manually calling the endpoints directly using a tool like Postman, but before doing it, you may need to have some registrations on the database, here are examples of the 3 inserts you can use to prepare the database: 
+ 
+ **Insert an user**
+ `INSERT INTO users (id, email, password, username)
+ VALUES ('c2d29867-3d0b-d497-9191-18a9d8ee7830', 'any@gmail.com','anypwd','any');`
+ 
+ **Create the wallet for the user**
+ `INSERT INTO wallet (user_id, wallet_id,balance, created_at)
+ VALUES ('c2d29867-3d0b-d497-9191-18a9d8ee7830', 'c3d29867-3d0b-d497-9191-18a9d8ee7837',0, '2024-04-27');`
+ 
+ **Insert the TOP_UP transaction type**
+ `INSERT INTO transaction_type (id,name)
+ VALUES (1,'TOP_UP');`
+
+## Automatic Units Testing
 Run unit tests: `./gradlew test`
 
   
