@@ -1,0 +1,70 @@
+{
+	"info": {
+		"_postman_id": "3f5185f9-989d-48a5-b0f6-2f87c3b27a64",
+		"name": "Playtomic Test - Teruel",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "4861109"
+	},
+	"item": [
+		{
+			"name": "Get Wallet Balance",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "localhost:8080/wallet/c2d29867-3d0b-d497-9191-18a9d8ee7830/balance"
+			},
+			"response": []
+		},
+		{
+			"name": "Charge Stripe Simulator",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"amount\":\"123\",\r\n    \"credit_card\":\"78979879\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "https://sandbox.playtomic.io/v1/stripe-simulator/charges"
+			},
+			"response": []
+		},
+		{
+			"name": "Payment - TopUp Wallet",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\":\"c2d29867-3d0b-d497-9191-18a9d8ee7830\",\r\n    \"amount\":\"11\",\r\n    \"creditCardNumber\":\"78979879\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "localhost:8080/payments/topup"
+			},
+			"response": []
+		}
+	]
+}
